@@ -26,6 +26,7 @@ void initialize(dequeue *P)
     P->rear=-1;
     P->front=-1;
 }
+
 int empty(dequeue *P)
 {
     if(P->rear==-1)
