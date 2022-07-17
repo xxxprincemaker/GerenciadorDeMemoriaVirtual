@@ -8,17 +8,34 @@ static int PID = 0;
 
 typedef struct Processo{
     int PID;
-    TabelaDePaginas * tabelaDePaginas;
+    TabelaDePaginas *tabelaDePaginas;
     int workingset;
 
 } Processo;
 
-void criarProcesso(Processo *processo){
+typedef struct Pagina{
+    Processo* proc;
+    int index;
+} Pagina;
+
+Processo* criarProcesso(){
+    Processo* processo = (Processo*) malloc(sizeof(Processo));
     processo->PID = PID+1;
     processo->tabelaDePaginas = criarTabelaDePaginas();
     processo->workingset = 0;
 }
 
-void mostrarPaginaProcesso(TabelaDePaginas *tabelaDePaginas){
-    printf("\033[34mProcesso\t| Inicio\t| T. de Servico\t| Tipo de IO\t| Inicio do IO\t| STATUS \t| PRIRD.|\033[0m\n");
+int getWorkingSet(Processo *p)
+{
+    return p->workingset;
+}
+
+int getPID(Processo *p)
+{
+    return p->PID;
+}
+
+TabelaDePaginas * getTabelaDePaginas(Processo *p)
+{
+    return p->tabelaDePaginas;
 }

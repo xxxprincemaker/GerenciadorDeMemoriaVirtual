@@ -1,10 +1,28 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "timer.c"
-#include "Processo.h"
+#include "GerenciadorDeMV.h"
 
 
 int main(){
-    printf("Ola Mundo!\n");
+    GerenciadorDeMV* gmv = criaGMV();
+    Processo* proc = criarProcesso();
+    
+    mostraTabela(proc->tabelaDePaginas);
+
+    imprimeMemoriaPrincipal(gmv->mp);
+
+    acessaPagina(gmv, proc, 10);
+
+    mostraTabela(proc->tabelaDePaginas);
+
+    imprimeMemoriaPrincipal(gmv->mp);
+
+    tiraPagDaMP(gmv, proc, 10);
+
+    mostraTabela(proc->tabelaDePaginas);
+
+    imprimeMemoriaPrincipal(gmv->mp);
+
     return 0;
 }
