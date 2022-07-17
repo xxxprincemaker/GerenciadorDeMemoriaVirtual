@@ -1,7 +1,8 @@
 //
 // Created by VipSo on 7/5/2022.
 //
-#define MAXPAGINAS 15
+
+#define MAXPAGINAS 3
 
 typedef struct TabelaDePaginas{
     int *presenca;

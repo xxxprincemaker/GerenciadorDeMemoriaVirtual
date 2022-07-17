@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "gerenciadordemv.h": "c",
+        "stdlib.h": "c",
+        "processo.h": "c",
+        "pagina.h": "c"
+    }
+}
