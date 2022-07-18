@@ -31,10 +31,8 @@ void setProcesso(Pagina * pagina, Processo * processo){
 }
 
 Pagina * criarPagina(Processo *p){
-    Pagina * pagina = (Pagina *) malloc(sizeof(Pagina));
-    if(!pagina) {printf("Não malocou"); exit(1);}
+    Pagina * pagina = (Pagina *) err_malloc(sizeof(Pagina));
     pagina->proc = p;
     pagina->index = 0;
-    printf("Conseguiu Alocar a Pagina de Endereco: %x\n", pagina);
     return pagina;
 }

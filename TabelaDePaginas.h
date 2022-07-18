@@ -2,7 +2,7 @@
 // Created by VipSo on 7/5/2022.
 //
 
-#define MAXPAGINAS 3
+#define MAXPAGINAS 50
 
 typedef struct TabelaDePaginas{
     int *presenca;
@@ -11,12 +11,12 @@ typedef struct TabelaDePaginas{
 
 TabelaDePaginas* criarTabelaDePaginas()
 {
-    TabelaDePaginas* tabelaDePaginas = (TabelaDePaginas*) malloc(sizeof(TabelaDePaginas));
-    tabelaDePaginas->presenca = (int*) malloc(sizeof(int) * MAXPAGINAS);
+    TabelaDePaginas* tabelaDePaginas = (TabelaDePaginas*) err_malloc(sizeof(TabelaDePaginas));
+    tabelaDePaginas->presenca = (int*) err_malloc(sizeof(int) * MAXPAGINAS);
     for(int i = 0; i < MAXPAGINAS; i++){
         tabelaDePaginas->presenca[i] = 0;
     }
-    tabelaDePaginas->frames = (int*)malloc(sizeof(int) * MAXPAGINAS);
+    tabelaDePaginas->frames = (int*) err_malloc(sizeof(int) * MAXPAGINAS);
 
     return tabelaDePaginas;
 }
@@ -31,12 +31,12 @@ void setFrame(TabelaDePaginas *tabela, int pagina, int frame) { tabela->frames[p
     Mostra tabela de paginas, passado uma tabela.
 */
 void mostraTabela(TabelaDePaginas *tabela){
-    printf("|Página\t| Pres.\t| Frame\t|\n");
+    printf("|Página\t| Frame\t|\n");
 
     for(int i = 0; i < MAXPAGINAS; i++) {
         if( getPresenca(tabela, i) )
-            printf("|%d\t| 1\t| %d\t|\n", i, getFrame(tabela, i));
-        else
-            printf("|%d\t| 0\t| -\t|\n", i);
+            printf("|%d\t| %d\t|\n", i, getFrame(tabela, i));
+        //else
+        //    printf("|%d\t| 0\t| -\t|\n", i);
     }
 }

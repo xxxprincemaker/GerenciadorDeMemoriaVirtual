@@ -11,7 +11,7 @@ typedef struct LRUQueue {
 } LRUQueue;
 
 LRUQueue* criaLRUQueue() {
-    LRUQueue* queue = (LRUQueue*) malloc(sizeof(LRUQueue));
+    LRUQueue* queue = (LRUQueue*) err_malloc(sizeof(LRUQueue));
   
     queue->frente = queue->tras = NULL;
   
@@ -26,7 +26,7 @@ void enqueue(LRUQueue *queue, Pagina *pag) {
     Node *newNode;
 
     if(isEmpty(queue)) {
-        newNode = (Node*) malloc(sizeof(Node));
+        newNode = (Node*) err_malloc(sizeof(Node));
         newNode->pag = pag;
         newNode->ant = NULL;
         newNode->prox = NULL;
@@ -53,7 +53,7 @@ void enqueue(LRUQueue *queue, Pagina *pag) {
         
         ant->prox = prox;
     } else {
-        newNode = (Node*) malloc(sizeof(Node));
+        newNode = (Node*) err_malloc(sizeof(Node));
         newNode->pag = pag;
     }
     newNode->ant = NULL;

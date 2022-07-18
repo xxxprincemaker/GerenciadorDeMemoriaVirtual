@@ -4,7 +4,7 @@
 #include "Pagina.h"
 #include "TabelaDePaginas.h"
 #include "LRUQueue.h"
-#define WORKINGSETLIMIT 2
+#define WORKINGSETLIMIT 4
 
 static int PID = 0;
 
@@ -17,18 +17,18 @@ typedef struct Processo{
 } Processo;
 
 Processo* criarProcesso(){
-    Processo* processo = (Processo*) malloc(sizeof(Processo));
-    processo->PID = PID+1;
+    Processo* processo = (Processo*) err_malloc(sizeof(Processo));
+    processo->PID = PID++;
     processo->tabelaDePaginas = criarTabelaDePaginas();
-    processo->paginas = (Pagina**) malloc(sizeof(Pagina*) * MAXPAGINAS);
-    if(!processo->paginas) printf("Não malocou irmão");
+    processo->paginas = (Pagina**) err_malloc(sizeof(Pagina*) * MAXPAGINAS);
     for(int i = 0; i < MAXPAGINAS; i++){
         processo->paginas[i] = criarPagina(processo);
         setIndex(processo->paginas[i], i);
     }
     processo->workingset = 0;
     processo->queue = criaLRUQueue();
-    printf("\n\n\n%x\n\n\n", processo->paginas);
+    
+    return processo;
 }
 
 int getWorkingSet(Processo *p)

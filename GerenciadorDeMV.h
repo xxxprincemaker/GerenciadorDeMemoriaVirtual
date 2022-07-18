@@ -1,5 +1,7 @@
 #include "Processo.h"
-#define TAM_MP 10
+#define TAM_MP 64
+
+int t = 0;
 
 typedef struct MemoriaPrincipal{
     int count;
@@ -13,9 +15,9 @@ typedef struct GerenciadorDeMV{
 
 
 MemoriaPrincipal* criaMP() {
-    MemoriaPrincipal *mp = (MemoriaPrincipal*) malloc(sizeof(MemoriaPrincipal));
+    MemoriaPrincipal *mp = (MemoriaPrincipal*) err_malloc(sizeof(MemoriaPrincipal));
     mp->count = 0;
-    mp->frames = (Pagina**) malloc(sizeof(Pagina*) * TAM_MP);
+    mp->frames = (Pagina**) err_malloc(sizeof(Pagina*) * TAM_MP);
     for(int i = 0; i < TAM_MP; i++){
         mp->frames[i] = NULL;
     }
@@ -23,7 +25,7 @@ MemoriaPrincipal* criaMP() {
 }
 
 GerenciadorDeMV* criaGMV() {
-    GerenciadorDeMV *gmv = (GerenciadorDeMV*) malloc(sizeof(GerenciadorDeMV));
+    GerenciadorDeMV *gmv = (GerenciadorDeMV*) err_malloc(sizeof(GerenciadorDeMV));
     gmv->mp = criaMP();
     gmv->queue = criaLRUQueue();
     return gmv;
@@ -77,7 +79,7 @@ void tiraPagDaMP(GerenciadorDeMV *gmv, Pagina *pagina) {
     gmv->mp->count--;
 }
 
-void tiraPagDeProcLRU(GerenciadorDeMV *gmv, Processo *proc) {
+Pagina *tiraPagDeProcLRU(GerenciadorDeMV *gmv, Processo *proc) {
     Pagina *pagina_retirada;
 
     pagina_retirada = dequeue(proc->queue);
@@ -85,30 +87,43 @@ void tiraPagDeProcLRU(GerenciadorDeMV *gmv, Processo *proc) {
     removeQueue(gmv->queue, pagina_retirada);
 
     tiraPagDaMP(gmv, pagina_retirada);
+
+    return pagina_retirada;
 }
 
-void tiraPagDaMPLRU(GerenciadorDeMV *gmv) {
+Pagina *tiraPagDaMPLRU(GerenciadorDeMV *gmv) {
     Pagina *pagina_retirada;
     
     pagina_retirada = dequeue(gmv->queue);
 
     tiraPagDaMP(gmv, pagina_retirada);
+
+    return pagina_retirada;
 }
 
 int acessaPagina(GerenciadorDeMV *gmv, Pagina *pagina) {
-    printf("enqueue gmv\n");
-    //enqueue(gmv->queue, pagina);
-    printf("enqueue proc\n");
-    //enqueue(pagina->proc->queue, pagina);
+    printf("[%03d] Processo #%d pede acesso a página %d (P#%d.%d)\n", t, pagina->proc->PID, pagina->index, pagina->proc->PID, pagina->index);
+
+    // Atualiza as filas de LRU tanto da mémoria inteira quanto do processo
+    enqueue(gmv->queue, pagina);
+    enqueue(pagina->proc->queue, pagina);
+    
     if( !getPresenca(pagina->proc->tabelaDePaginas, pagina->index) ) {
+        printf("[%03d] (PAGE MISS) Página P#%d.%d não está na MP\n", t, pagina->proc->PID, pagina->index);
         if( pagina->proc->workingset == WORKINGSETLIMIT ) {
-            tiraPagDeProcLRU(gmv, pagina->proc);
+            Pagina *pagina_retirada = tiraPagDeProcLRU(gmv, pagina->proc);
+            printf("[%03d] (WORKING SET LIMIT ATINGIDO) Página P#%d.%d removida da MP\n", t, pagina_retirada->proc->PID, pagina_retirada->index);
         } else if( memoriaCheia(gmv->mp) ) {
-            tiraPagDaMPLRU(gmv);
-        } 
-        return colocaPagNaMP(gmv, pagina);
+            Pagina *pagina_retirada = tiraPagDaMPLRU(gmv);
+            printf("[%03d] (MEMÓRIA CHEIA) Página P#%d.%d removida da MP\n", t, pagina_retirada->proc->PID, pagina_retirada->index);
+        }
+        int frame = colocaPagNaMP(gmv, pagina);
+        printf("[%03d] Página P#%d.%d colocada no frame %d\n", t, pagina->proc->PID, pagina->index, frame);
+        return frame;
     } else {
-        return getFrame(pagina->proc->tabelaDePaginas, pagina->index);
+        int frame = getFrame(pagina->proc->tabelaDePaginas, pagina->index);
+        printf("[%03d] (PAGE HIT) Página P#%d.%d encontrada no frame %d\n", t, pagina->proc->PID, pagina->index, frame);
+        return frame;
     }
 
 }
